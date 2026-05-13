@@ -1,0 +1,32 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+name: customer-temporal-worker
+summary: Customer Temporal worker workload
+description: OCI image containing customer workflow and activity code.
+version: "0.1"
+base: ubuntu@24.04
+build-base: ubuntu@24.04
+license: Apache-2.0
+platforms:
+  amd64:
+
+services:
+  temporal-worker:
+    override: replace
+    summary: "temporal worker"
+    startup: disabled
+    command: "/app/scripts/start-worker.sh"
+
+parts:
+  worker-app:
+    plugin: dump
+    source: .
+    organize:
+      "*": app/
+  runtime:
+    plugin: nil
+    stage-packages:
+      - python3
+      - bash
+      - coreutils
+      - ca-certificates

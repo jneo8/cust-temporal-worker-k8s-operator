@@ -1,0 +1,211 @@
+# Copyright 2023 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# This file defines charm config options, and populates the Configure tab on Charmhub.
+# If your charm does not require configuration options, delete this file entirely.
+#
+# See https://juju.is/docs/config for guidance.
+
+options:
+  # An example config option to customise the log level of the workload
+  log-level:
+    description: |
+      Configures the log level of gunicorn.
+
+      Acceptable values are: "info", "debug", "warning", "error" and "critical"
+    default: "info"
+    type: string
+
+  host:
+    description: |
+      [DEPRECATED] Optional fallback Temporal server address (`hostname` or `hostname:port`) when
+      `temporal-host-info` relation is unavailable.
+      Leave empty to require `temporal-host-info` only. If set, this option is deprecated and will be
+      removed in a future release; prefer the `temporal-host-info` relation as the source of truth.
+    default: ""
+    type: string
+
+  namespace:
+    description: Temporal namespace the worker should connect to.
+    default: ""
+    type: string
+
+  queue:
+    description: Temporal task queue the worker should connect to.
+    default: ""
+    type: string
+
+  sentry-dsn:
+    description: Sentry Data Source Name to send events to.
+    default: ""
+    type: string
+
+  sentry-release:
+    description: The version of your code deployed to an environment.
+    default: ""
+    type: string
+
+  sentry-environment:
+    description: The environment to log errors to in Sentry.
+    default: ""
+    type: string
+
+  sentry-redact-params:
+    description: Indicates whether or not event parameters sent to Sentry should be redacted.
+    default: false
+    type: boolean
+
+  sentry-sample-rate:
+    description: |
+      A value between 0 (0% of errors) and 1 (100% of errors) to indicate the proportion of errors
+      to be captured by Sentry.
+
+    default: 1.0
+    type: float
+
+  auth-secret-id:
+    description: |
+      Juju secret ID containing authentication and encryption key parameters. This takes precedence over
+      the auth-related configuration options, which will be deprecated in the future.
+    type: string
+
+  encryption-key:
+    description: (Deprecated in favor of 'auth-secret-id') Base64-encoded key used for data encryption.
+    default: ""
+    type: string
+
+  auth-provider:
+    description: |
+      (Deprecated in favor of 'auth-secret-id') Authentication provider for user authentication.
+
+      Acceptable values are "candid" and "google".
+    default: ""
+    type: string
+
+  tls-root-cas:
+    description: Root certificate authority (CA) certificates for TLS communication.
+    default: ""
+    type: string
+
+  candid-url:
+    description: (Deprecated in favor of 'auth-secret-id') URL of the Candid service.
+    default: ""
+    type: string
+
+  candid-username:
+    description: (Deprecated in favor of 'auth-secret-id') Username for accessing the Candid service.
+    default: ""
+    type: string
+
+  candid-public-key:
+    description: (Deprecated in favor of 'auth-secret-id') Public key for Candid authentication.
+    default: ""
+    type: string
+
+  candid-private-key:
+    description: (Deprecated in favor of 'auth-secret-id') Private key for Candid authentication.
+    default: ""
+    type: string
+
+  oidc-auth-type:
+    description: (Deprecated in favor of 'auth-secret-id') Authentication type for OIDC authentication.
+    default: "service_account"
+    type: string
+
+  oidc-project-id:
+    description: (Deprecated in favor of 'auth-secret-id') Project ID for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-private-key-id:
+    description: (Deprecated in favor of 'auth-secret-id') Private key ID for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-private-key:
+    description: (Deprecated in favor of 'auth-secret-id') Project key for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-client-email:
+    description: (Deprecated in favor of 'auth-secret-id') Client email for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-client-id:
+    description: (Deprecated in favor of 'auth-secret-id') Client ID for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-auth-uri:
+    description: (Deprecated in favor of 'auth-secret-id') Authentication URI for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-token-uri:
+    description: (Deprecated in favor of 'auth-secret-id') Token URI for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-auth-cert-url:
+    description: (Deprecated in favor of 'auth-secret-id') Authentication certificate URL for OIDC authentication.
+    default: ""
+    type: string
+
+  oidc-client-cert-url:
+    description: (Deprecated in favor of 'auth-secret-id') Client certificate URL for OIDC authentication.
+    default: ""
+    type: string
+
+  db-name:
+    description: Name of the database created when relating to a database charm.
+    default: ""
+    type: string
+
+  environment:
+    description: |
+      This configuration is used to manage and retrieve sensitive information required
+      by the application from different sources. The `environment` configuration supports
+      the following sources:
+
+      - **Environment Variables**: Plaintext environment variables.
+      - **Juju**: Secrets can be managed and retrieved using Juju's secret storage capabilities.
+      - **Vault**: Secrets can be securely stored and accessed from a HashiCorp Vault instance.
+
+      The application will prioritize these sources in the following order: Vault, Juju,
+      and then environment variables. If a variable is not found in the higher priority
+      sources, it will fallback to the next available source. This ensures that the
+      application can function correctly in various deployment scenarios while maintaining
+      security and flexibility.
+
+      Sample structure:
+
+        ```yaml
+          env:
+            - name: key1
+              value: value1
+            - name: nested_example_key
+              value:
+                - connection_id: a_connection_id
+                  unnesting:
+                    tables:
+                      issues: ["test1", "test2"]
+                      users: [test3]
+                  redaction:
+          juju:
+            - secret-id: <secret_id1>
+              name: sensitive1
+              key: key1
+            - secret-id: <secret_id1>
+              name: sensitive2
+              key: key2
+            - secret-id: <secret_id2> # reads all keys from this secret
+          vault:
+            - path: my-secrets
+              name: sensitive1
+              key: key1
+            - path: my-secrets
+              name: sensitive2
+              key: key2
+        ```
+    type: string

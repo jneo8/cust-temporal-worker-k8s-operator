@@ -1,0 +1,23 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+type: charm
+
+platforms:
+  ubuntu@24.04:amd64:
+
+parts:
+  charm:
+    plugin: uv
+    source: .
+    uv-extras:
+      - charm
+    build-snaps:
+      - astral-uv
+    build-packages:
+      - python3-venv
+      - cargo
+      - rustc
+      - pkg-config
+      - libffi-dev
+      - libssl-dev

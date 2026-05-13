@@ -1,0 +1,67 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: customer-temporal-worker
+display-name: Customer Temporal Worker
+summary: Customer-specific Temporal Worker operator
+description: |
+  A downstream Temporal worker charm built on top of the
+  `temporal_worker` charm library published by `temporal-worker-k8s`.
+
+  Consumes workflow data from Juju relations in addition to the
+  configuration and Juju-secret paths the upstream library already supports.
+maintainers:
+  - Commercial Systems <jaas-crew@lists.canonical.com>
+assumes:
+  - k8s-api
+
+storage:
+  certs:
+    type: filesystem
+    minimum-size: 5M
+
+peers:
+  peer:
+    interface: temporal
+
+containers:
+  temporal-worker:
+    resource: temporal-worker-image
+
+resources:
+  temporal-worker-image:
+    type: oci-image
+    description: OCI image containing the Temporal worker workload.
+    upstream-source: localhost:32000/customer-temporal-worker:0.1
+
+provides:
+  metrics-endpoint:
+    interface: prometheus_scrape
+    optional: true
+  grafana-dashboard:
+    interface: grafana_dashboard
+    optional: true
+  temporal-worker-info:
+    interface: temporal-worker-info
+
+requires:
+  logging:
+    interface: loki_push_api
+    optional: true
+    limit: 1
+  vault:
+    interface: vault-kv
+    optional: true
+    limit: 1
+  database:
+    interface: postgresql_client
+    optional: true
+    limit: 1
+  temporal-host-info:
+    interface: temporal-host-info
+    optional: false
+    limit: 1
+  certificates:
+    interface: tls-certificates
+    optional: true
+    limit: 1
